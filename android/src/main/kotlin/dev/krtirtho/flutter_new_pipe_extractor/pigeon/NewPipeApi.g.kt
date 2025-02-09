@@ -54,9 +54,12 @@ private open class NewPipeApiPigeonCodec : StandardMessageCodec() {
   }
 }
 
+
 /** Generated interface from Pigeon that represents a handler of messages from Flutter. */
 interface NewPipeExtractor {
   fun init()
+  fun getVideoInfo(videoId: String, callback: (Result<String>) -> Unit)
+  fun search(query: String, contentFilters: List<String>?, sortFilter: String?, callback: (Result<String>) -> Unit)
 
   companion object {
     /** The codec used by NewPipeExtractor. */
@@ -78,6 +81,48 @@ interface NewPipeExtractor {
               wrapError(exception)
             }
             reply.reply(wrapped)
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.flutter_new_pipe_extractor.NewPipeExtractor.getVideoInfo$separatedMessageChannelSuffix", codec)
+        if (api != null) {
+          channel.setMessageHandler { message, reply ->
+            val args = message as List<Any?>
+            val videoIdArg = args[0] as String
+            api.getVideoInfo(videoIdArg) { result: Result<String> ->
+              val error = result.exceptionOrNull()
+              if (error != null) {
+                reply.reply(wrapError(error))
+              } else {
+                val data = result.getOrNull()
+                reply.reply(wrapResult(data))
+              }
+            }
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.flutter_new_pipe_extractor.NewPipeExtractor.search$separatedMessageChannelSuffix", codec)
+        if (api != null) {
+          channel.setMessageHandler { message, reply ->
+            val args = message as List<Any?>
+            val queryArg = args[0] as String
+            val contentFiltersArg = args[1] as List<String>?
+            val sortFilterArg = args[2] as String?
+            api.search(queryArg, contentFiltersArg, sortFilterArg) { result: Result<String> ->
+              val error = result.exceptionOrNull()
+              if (error != null) {
+                reply.reply(wrapError(error))
+              } else {
+                val data = result.getOrNull()
+                reply.reply(wrapResult(data))
+              }
+            }
           }
         } else {
           channel.setMessageHandler(null)

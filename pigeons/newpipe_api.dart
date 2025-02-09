@@ -15,4 +15,14 @@ import 'package:pigeon/pigeon.dart';
 @HostApi()
 abstract class NewPipeExtractor {
   void init();
+
+  @async
+  String getVideoInfo(String videoId);
+
+  @async
+  String search(
+    String query, {
+    List<String>? contentFilters,
+    String? sortFilter,
+  });
 }
