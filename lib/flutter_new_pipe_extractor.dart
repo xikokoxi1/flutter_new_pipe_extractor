@@ -1,9 +1,9 @@
-import 'package:flutter_new_pipe_extractor/models/models.dart';
-import 'package:flutter_new_pipe_extractor/pigeon/newpipe_api.g.dart' as api;
-import 'package:flutter_new_pipe_extractor/utils/utils.dart';
+import 'package:flutter_new_pipe_extractor/src/models/models.dart';
+import 'package:flutter_new_pipe_extractor/src/pigeon/newpipe_api.g.dart'
+    as api;
+import 'package:flutter_new_pipe_extractor/src/utils/utils.dart';
 
-export 'package:flutter_new_pipe_extractor/pigeon/newpipe_api.g.dart'
-    hide NewPipeExtractor;
+export 'src/models/models.dart';
 
 abstract class NewPipeExtractor {
   static final _hostApi = api.NewPipeExtractor();
@@ -20,12 +20,12 @@ abstract class NewPipeExtractor {
 
   static Future<List<SearchResultItem>> search(
     String query, {
-    List<String>? contentFilters,
+    List<SearchContentFilters>? contentFilters,
     String? sortFilter,
   }) async {
     final json = await _hostApi.search(
       query,
-      contentFilters: contentFilters,
+      contentFilters: contentFilters?.map((e) => e.label).toList(),
       sortFilter: sortFilter,
     );
 

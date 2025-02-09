@@ -7,7 +7,7 @@ class JsonMessageMap {
 }
 
 @ConfigurePigeon(PigeonOptions(
-  dartOut: 'lib/pigeon/newpipe_api.g.dart',
+  dartOut: 'lib/src/pigeon/newpipe_api.g.dart',
   dartOptions: DartOptions(),
   kotlinOut:
       'android/src/main/kotlin/dev/krtirtho/flutter_new_pipe_extractor/pigeon/NewPipeApi.g.kt',

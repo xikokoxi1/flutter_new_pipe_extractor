@@ -25,10 +25,10 @@ class _MyAppState extends State<MyApp> {
   Future<void> initPlatformState() async {
     await NewPipeExtractor.init();
 
-    final results = await NewPipeExtractor.search('How Long - Charlie Puth');
-    // final results = await NewPipeExtractor.getVideoInfo('nfs8NYg7yQM');
+    // final results = await NewPipeExtractor.search('How Long - Charlie Puth');
+    final results = await NewPipeExtractor.getVideoInfo('nfs8NYg7yQM');
 
-    print("Video title: $results");
+    print("Video title: ${results.audioStreams.map((e) => e.content)}");
   }
 
   @override

@@ -1,5 +1,19 @@
 part of 'models.dart';
 
+enum SearchContentFilters {
+  all("ALL"),
+  videos("VIDEOS"),
+  channels("CHANNELS"),
+  playlists("PLAYLISTS"),
+  musicSongs("MUSIC_SONGS"),
+  musicVideos("MUSIC_VIDEOS"),
+  musicAlbums("MUSIC_ALBUMS"),
+  musicPlaylists("MUSIC_PLAYLISTS");
+
+  final String label;
+  const SearchContentFilters(this.label);
+}
+
 enum SearchResultType {
   @JsonValue('STREAM')
   video,
@@ -85,7 +99,8 @@ class VideoSearchResultItem extends SearchResultItem {
     this.textualUploadDate,
   });
 
-  factory VideoSearchResultItem.fromJson(Map<String, dynamic> json) => _$VideoSearchResultItemFromJson(json);
+  factory VideoSearchResultItem.fromJson(Map<String, dynamic> json) =>
+      _$VideoSearchResultItemFromJson(json);
   Map<String, dynamic> toJson() => _$VideoSearchResultItemToJson(this);
 }
 
@@ -104,10 +119,11 @@ class ChannelSearchResultItem extends SearchResultItem {
     required super.url,
     required super.name,
     required super.thumbnails,
-     this.description,
+    this.description,
   });
 
-  factory ChannelSearchResultItem.fromJson(Map<String, dynamic> json) => _$ChannelSearchResultItemFromJson(json);
+  factory ChannelSearchResultItem.fromJson(Map<String, dynamic> json) =>
+      _$ChannelSearchResultItemFromJson(json);
   Map<String, dynamic> toJson() => _$ChannelSearchResultItemToJson(this);
 }
 
@@ -133,6 +149,7 @@ class PlaylistSearchResultItem extends SearchResultItem {
     this.uploaderUrl,
   });
 
-  factory PlaylistSearchResultItem.fromJson(Map<String, dynamic> json) => _$PlaylistSearchResultItemFromJson(json);
+  factory PlaylistSearchResultItem.fromJson(Map<String, dynamic> json) =>
+      _$PlaylistSearchResultItemFromJson(json);
   Map<String, dynamic> toJson() => _$PlaylistSearchResultItemToJson(this);
 }
