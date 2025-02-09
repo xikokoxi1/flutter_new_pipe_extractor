@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 
-import 'package:flutter/services.dart';
 import 'package:flutter_new_pipe_extractor/flutter_new_pipe_extractor.dart';
 
 void main() {
@@ -26,8 +25,8 @@ class _MyAppState extends State<MyApp> {
   Future<void> initPlatformState() async {
     await NewPipeExtractor.init();
 
-    // final results = await NewPipeExtractor.search('How Long - Charlie Puth');
-    final results = await NewPipeExtractor.getVideoInfo('nfs8NYg7yQM');
+    final results = await NewPipeExtractor.search('How Long - Charlie Puth');
+    // final results = await NewPipeExtractor.getVideoInfo('nfs8NYg7yQM');
 
     print("Video title: $results");
   }

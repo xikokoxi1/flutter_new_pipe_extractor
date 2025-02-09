@@ -1,5 +1,11 @@
 import 'package:pigeon/pigeon.dart';
 
+class JsonMessageMap {
+  Map<String, Object?> data;
+
+  JsonMessageMap(this.data);
+}
+
 @ConfigurePigeon(PigeonOptions(
   dartOut: 'lib/pigeon/newpipe_api.g.dart',
   dartOptions: DartOptions(),
@@ -17,10 +23,10 @@ abstract class NewPipeExtractor {
   void init();
 
   @async
-  String getVideoInfo(String videoId);
+  JsonMessageMap getVideoInfo(String videoId);
 
   @async
-  String search(
+  List<JsonMessageMap> search(
     String query, {
     List<String>? contentFilters,
     String? sortFilter,

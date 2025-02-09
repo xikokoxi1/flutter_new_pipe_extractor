@@ -1,7 +1,6 @@
-import 'dart:convert';
-
 import 'package:flutter_new_pipe_extractor/models/models.dart';
 import 'package:flutter_new_pipe_extractor/pigeon/newpipe_api.g.dart' as api;
+import 'package:flutter_new_pipe_extractor/utils/utils.dart';
 
 export 'package:flutter_new_pipe_extractor/pigeon/newpipe_api.g.dart'
     hide NewPipeExtractor;
@@ -14,10 +13,9 @@ abstract class NewPipeExtractor {
   }
 
   static Future<VideoInfo> getVideoInfo(String videoId) async {
-    final rawJson = await _hostApi.getVideoInfo(videoId);
-    final json = jsonDecode(rawJson);
+    final json = await _hostApi.getVideoInfo(videoId);
 
-    return VideoInfo.fromJson(json);
+    return VideoInfo.fromJson(deepCastMap(json.data));
   }
 
   static Future<List<SearchResultItem>> search(
@@ -25,18 +23,20 @@ abstract class NewPipeExtractor {
     List<String>? contentFilters,
     String? sortFilter,
   }) async {
-    final json = jsonDecode(await _hostApi.search(
+    final json = await _hostApi.search(
       query,
       contentFilters: contentFilters,
       sortFilter: sortFilter,
-    )) as List;
+    );
 
     return json
-        .map((e) => switch (e["infoType"]) {
-              "STREAM" => VideoSearchResultItem.fromJson(e),
-              "PLAYLIST" => PlaylistSearchResultItem.fromJson(e),
-              "CHANNEL" => ChannelSearchResultItem.fromJson(e),
-              _ => throw Exception("Unknown type: ${e["type"]}"),
+        .map((e) => switch (e.data["infoType"]) {
+              "STREAM" => VideoSearchResultItem.fromJson(deepCastMap(e.data)),
+              "PLAYLIST" =>
+                PlaylistSearchResultItem.fromJson(deepCastMap(e.data)),
+              "CHANNEL" =>
+                ChannelSearchResultItem.fromJson(deepCastMap(e.data)),
+              _ => throw Exception("Unknown type: ${e.data["type"]}"),
             })
         .toList();
   }

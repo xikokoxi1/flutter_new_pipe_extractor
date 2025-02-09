@@ -15,6 +15,27 @@ PlatformException _createConnectionError(String channelName) {
   );
 }
 
+class JsonMessageMap {
+  JsonMessageMap({
+    required this.data,
+  });
+
+  Map<String, Object?> data;
+
+  Object encode() {
+    return <Object?>[
+      data,
+    ];
+  }
+
+  static JsonMessageMap decode(Object result) {
+    result as List<Object?>;
+    return JsonMessageMap(
+      data: (result[0] as Map<Object?, Object?>?)!.cast<String, Object?>(),
+    );
+  }
+}
+
 
 class _PigeonCodec extends StandardMessageCodec {
   const _PigeonCodec();
@@ -23,6 +44,9 @@ class _PigeonCodec extends StandardMessageCodec {
     if (value is int) {
       buffer.putUint8(4);
       buffer.putInt64(value);
+    }    else if (value is JsonMessageMap) {
+      buffer.putUint8(129);
+      writeValue(buffer, value.encode());
     } else {
       super.writeValue(buffer, value);
     }
@@ -31,6 +55,8 @@ class _PigeonCodec extends StandardMessageCodec {
   @override
   Object? readValueOfType(int type, ReadBuffer buffer) {
     switch (type) {
+      case 129: 
+        return JsonMessageMap.decode(readValue(buffer)!);
       default:
         return super.readValueOfType(type, buffer);
     }
@@ -72,7 +98,7 @@ class NewPipeExtractor {
     }
   }
 
-  Future<String> getVideoInfo(String videoId) async {
+  Future<JsonMessageMap> getVideoInfo(String videoId) async {
     final String pigeonVar_channelName = 'dev.flutter.pigeon.flutter_new_pipe_extractor.NewPipeExtractor.getVideoInfo$pigeonVar_messageChannelSuffix';
     final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
       pigeonVar_channelName,
@@ -95,11 +121,11 @@ class NewPipeExtractor {
         message: 'Host platform returned null value for non-null return value.',
       );
     } else {
-      return (pigeonVar_replyList[0] as String?)!;
+      return (pigeonVar_replyList[0] as JsonMessageMap?)!;
     }
   }
 
-  Future<String> search(String query, {List<String>? contentFilters, String? sortFilter, }) async {
+  Future<List<JsonMessageMap>> search(String query, {List<String>? contentFilters, String? sortFilter, }) async {
     final String pigeonVar_channelName = 'dev.flutter.pigeon.flutter_new_pipe_extractor.NewPipeExtractor.search$pigeonVar_messageChannelSuffix';
     final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
       pigeonVar_channelName,
@@ -122,7 +148,7 @@ class NewPipeExtractor {
         message: 'Host platform returned null value for non-null return value.',
       );
     } else {
-      return (pigeonVar_replyList[0] as String?)!;
+      return (pigeonVar_replyList[0] as List<Object?>?)!.cast<JsonMessageMap>();
     }
   }
 }

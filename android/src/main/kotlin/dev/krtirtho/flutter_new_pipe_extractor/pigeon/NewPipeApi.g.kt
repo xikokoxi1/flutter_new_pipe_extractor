@@ -45,12 +45,43 @@ class FlutterError (
   override val message: String? = null,
   val details: Any? = null
 ) : Throwable()
+
+/** Generated class from Pigeon that represents data sent in messages. */
+data class JsonMessageMap (
+  val data: Map<String, Any?>
+)
+ {
+  companion object {
+    fun fromList(pigeonVar_list: List<Any?>): JsonMessageMap {
+      val data = pigeonVar_list[0] as Map<String, Any?>
+      return JsonMessageMap(data)
+    }
+  }
+  fun toList(): List<Any?> {
+    return listOf(
+      data,
+    )
+  }
+}
 private open class NewPipeApiPigeonCodec : StandardMessageCodec() {
   override fun readValueOfType(type: Byte, buffer: ByteBuffer): Any? {
-    return     super.readValueOfType(type, buffer)
+    return when (type) {
+      129.toByte() -> {
+        return (readValue(buffer) as? List<Any?>)?.let {
+          JsonMessageMap.fromList(it)
+        }
+      }
+      else -> super.readValueOfType(type, buffer)
+    }
   }
   override fun writeValue(stream: ByteArrayOutputStream, value: Any?)   {
-    super.writeValue(stream, value)
+    when (value) {
+      is JsonMessageMap -> {
+        stream.write(129)
+        writeValue(stream, value.toList())
+      }
+      else -> super.writeValue(stream, value)
+    }
   }
 }
 
@@ -58,8 +89,8 @@ private open class NewPipeApiPigeonCodec : StandardMessageCodec() {
 /** Generated interface from Pigeon that represents a handler of messages from Flutter. */
 interface NewPipeExtractor {
   fun init()
-  fun getVideoInfo(videoId: String, callback: (Result<String>) -> Unit)
-  fun search(query: String, contentFilters: List<String>?, sortFilter: String?, callback: (Result<String>) -> Unit)
+  fun getVideoInfo(videoId: String, callback: (Result<JsonMessageMap>) -> Unit)
+  fun search(query: String, contentFilters: List<String>?, sortFilter: String?, callback: (Result<List<JsonMessageMap>>) -> Unit)
 
   companion object {
     /** The codec used by NewPipeExtractor. */
@@ -92,7 +123,7 @@ interface NewPipeExtractor {
           channel.setMessageHandler { message, reply ->
             val args = message as List<Any?>
             val videoIdArg = args[0] as String
-            api.getVideoInfo(videoIdArg) { result: Result<String> ->
+            api.getVideoInfo(videoIdArg) { result: Result<JsonMessageMap> ->
               val error = result.exceptionOrNull()
               if (error != null) {
                 reply.reply(wrapError(error))
@@ -114,7 +145,7 @@ interface NewPipeExtractor {
             val queryArg = args[0] as String
             val contentFiltersArg = args[1] as List<String>?
             val sortFilterArg = args[2] as String?
-            api.search(queryArg, contentFiltersArg, sortFilterArg) { result: Result<String> ->
+            api.search(queryArg, contentFiltersArg, sortFilterArg) { result: Result<List<JsonMessageMap>> ->
               val error = result.exceptionOrNull()
               if (error != null) {
                 reply.reply(wrapError(error))

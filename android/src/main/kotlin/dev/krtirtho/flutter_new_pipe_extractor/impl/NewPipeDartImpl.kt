@@ -2,7 +2,9 @@ package dev.krtirtho.flutter_new_pipe_extractor.impl
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.google.gson.reflect.TypeToken
 import dev.krtirtho.flutter_new_pipe_extractor.downloader.DownloaderImpl
+import dev.krtirtho.flutter_new_pipe_extractor.pigeon.JsonMessageMap
 import dev.krtirtho.flutter_new_pipe_extractor.pigeon.NewPipeExtractor
 import io.flutter.Log
 import kotlinx.coroutines.CoroutineScope
@@ -36,7 +38,7 @@ class NewPipeDartImpl : NewPipeExtractor {
 
     override fun getVideoInfo(
         videoId: String,
-        callback: (Result<String>) -> Unit
+        callback: (Result<JsonMessageMap>) -> Unit
     ) {
         scope.launch {
             try {
@@ -49,7 +51,13 @@ class NewPipeDartImpl : NewPipeExtractor {
                     )
                 )
 
-                var jsonInfo = gson.toJson(streamInfo)
+                var jsonElement = gson.toJsonTree(streamInfo)
+                var jsonInfo = JsonMessageMap(
+                    data = gson.fromJson(
+                        jsonElement,
+                        object : TypeToken<Map<String, Any>>() {}.type
+                    ),
+                )
 
                 withContext(Dispatchers.Main) {
                     callback(Result.success(jsonInfo))
@@ -67,7 +75,7 @@ class NewPipeDartImpl : NewPipeExtractor {
         query: String,
         contentFilters: List<String>?,
         sortFilter: String?,
-        callback: (Result<String>) -> Unit
+        callback: (Result<List<JsonMessageMap>>) -> Unit
     ) {
         scope.launch {
             try {
@@ -81,7 +89,16 @@ class NewPipeDartImpl : NewPipeExtractor {
                     )
                 )
 
-                var items = gson.toJson(searchResults.relatedItems)
+                var jsonElement = gson.toJsonTree(searchResults.relatedItems)
+                var items = gson.fromJson<List<Map<String, Any?>>>(
+                    jsonElement,
+                    object : TypeToken<List<Any>>() {}.type
+                )
+                    .map {
+                        JsonMessageMap(
+                            data = it
+                        )
+                    }
 
                 withContext(Dispatchers.Main) {
                     callback(Result.success(items))
