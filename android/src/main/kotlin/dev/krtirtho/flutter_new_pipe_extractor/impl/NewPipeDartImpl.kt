@@ -1,8 +1,6 @@
 package dev.krtirtho.flutter_new_pipe_extractor.impl
 
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
-import com.google.gson.reflect.TypeToken
+import dev.krtirtho.flutter_new_pipe_extractor.converter.Convert
 import dev.krtirtho.flutter_new_pipe_extractor.downloader.DownloaderImpl
 import dev.krtirtho.flutter_new_pipe_extractor.pigeon.JsonMessageMap
 import dev.krtirtho.flutter_new_pipe_extractor.pigeon.NewPipeExtractor
@@ -17,15 +15,9 @@ import org.schabi.newpipe.extractor.NewPipe
 import org.schabi.newpipe.extractor.search.SearchInfo
 import org.schabi.newpipe.extractor.services.youtube.YoutubeService
 import org.schabi.newpipe.extractor.stream.StreamInfo
-import java.time.OffsetDateTime
 
 class NewPipeDartImpl : NewPipeExtractor {
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
-    private val gson = GsonBuilder()
-        .registerTypeAdapter(
-            OffsetDateTime::class.java,
-            OffsetDateTimeAdapterEpoch()
-        ).create()
 
     fun getService(): YoutubeService {
         return NewPipe.getService(0) as YoutubeService
@@ -43,7 +35,6 @@ class NewPipeDartImpl : NewPipeExtractor {
         scope.launch {
             try {
                 var service = getService()
-                var url = "https://www.youtube.com/watch?v=$videoId"
 
                 var streamInfo = StreamInfo.getInfo(
                     service.getStreamExtractor(
@@ -51,16 +42,10 @@ class NewPipeDartImpl : NewPipeExtractor {
                     )
                 )
 
-                var jsonElement = gson.toJsonTree(streamInfo)
-                var jsonInfo = JsonMessageMap(
-                    data = gson.fromJson(
-                        jsonElement,
-                        object : TypeToken<Map<String, Any>>() {}.type
-                    ),
-                )
+                var jsonElement = Convert.streamInfoMap(streamInfo)
 
                 withContext(Dispatchers.Main) {
-                    callback(Result.success(jsonInfo))
+                    callback(Result.success(JsonMessageMap(data = jsonElement)))
                 }
             } catch (e: Exception) {
                 Log.e("NewPipeDartImpl", "getVideoInfo: $e")
@@ -89,19 +74,13 @@ class NewPipeDartImpl : NewPipeExtractor {
                     )
                 )
 
-                var jsonElement = gson.toJsonTree(searchResults.relatedItems)
-                var items = gson.fromJson<List<Map<String, Any?>>>(
-                    jsonElement,
-                    object : TypeToken<List<Any>>() {}.type
-                )
+                var jsonElement = searchResults.relatedItems
                     .map {
-                        JsonMessageMap(
-                            data = it
-                        )
+                        JsonMessageMap(Convert.infoItemMap(it))
                     }
 
                 withContext(Dispatchers.Main) {
-                    callback(Result.success(items))
+                    callback(Result.success(jsonElement))
                 }
             } catch (e: Exception) {
                 Log.e("NewPipeDartImpl", "search: $e")
