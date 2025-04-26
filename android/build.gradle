@@ -54,7 +54,7 @@ android {
     }
 
     dependencies {
-        implementation 'com.github.teamnewpipe:NewPipeExtractor:aa673635530e131c48762c9eb8b610bea9249495'
+        implementation 'com.github.teamnewpipe:NewPipeExtractor:67f3301d9fe895fc179e16788013e5d93b4673f0'
         implementation "com.squareup.okhttp3:okhttp:4.12.0"
         implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3'
 
