@@ -1,14 +1,14 @@
 part of 'models.dart';
 
 enum SearchContentFilters {
-  all("ALL"),
-  videos("VIDEOS"),
-  channels("CHANNELS"),
-  playlists("PLAYLISTS"),
-  musicSongs("MUSIC_SONGS"),
-  musicVideos("MUSIC_VIDEOS"),
-  musicAlbums("MUSIC_ALBUMS"),
-  musicPlaylists("MUSIC_PLAYLISTS");
+  all("all"),
+  videos("videos"),
+  channels("channels"),
+  playlists("playlists"),
+  musicSongs("music_songs"),
+  musicVideos("music_videos"),
+  musicAlbums("music_albums"),
+  musicPlaylists("music_playlists");
 
   final String label;
   const SearchContentFilters(this.label);
